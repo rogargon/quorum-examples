@@ -1,5 +1,5 @@
 # The following environment variables are substituted if present
-# * QUORUM_CONSENSUS: default to istanbul
+# * QUORUM_CONSENSUS: default to raft
 # * QUORUM_DOCKER_IMAGE: default to quorumengineering/quorum:2.2.3
 # * QUORUM_TX_MANAGER_DOCKER_IMAGE: default to quorumengineering/tessera:0.9
 # * QUORUM_GETH_ARGS: extra geth arguments to be included when running geth
@@ -21,7 +21,7 @@ x-quorum-def:
     retries: 10
     start_period: 5s
   labels:
-    com.quorum.consensus: ${QUORUM_CONSENSUS:-istanbul}
+    com.quorum.consensus: ${QUORUM_CONSENSUS:-raft}
   entrypoint:
     - /bin/sh
     - -c
@@ -48,7 +48,7 @@ x-quorum-def:
       cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
       cat $${DDIR}/static-nodes.json
       GENESIS_FILE="/examples/istanbul-genesis.json"
-      if [ "${QUORUM_CONSENSUS:-istanbul}" == "raft" ]; then
+      if [ "${QUORUM_CONSENSUS:-raft}" == "raft" ]; then
         GENESIS_FILE="/examples/genesis.json"
       fi
       NETWORK_ID=$$(cat $${GENESIS_FILE} | grep chainId | awk -F " " '{print $$2}' | awk -F "," '{print $$1}')
@@ -56,7 +56,7 @@ x-quorum-def:
       GETH_ARGS_istanbul="--emitcheckpoints --istanbul.blockperiod 1 --mine --minerthreads 1 --syncmode full"
       geth --datadir $${DDIR} init $${GENESIS_FILE}
       geth \
-        --identity node$${NODE_ID}-${QUORUM_CONSENSUS:-istanbul} \
+        --identity node$${NODE_ID}-${QUORUM_CONSENSUS:-raft} \
         --datadir $${DDIR} \
         --permissioned \
         --nodiscover \
@@ -65,7 +65,7 @@ x-quorum-def:
         --rpc \
         --rpcaddr 0.0.0.0 \
         --rpcport 8545 \
-        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
+        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-raft} \
         --port 21000 \
         --unlock 0 \
         --password /examples/passwords.txt \
